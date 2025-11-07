@@ -4,6 +4,9 @@ import { ThemeProvider } from './hooks/useTheme';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 
+import { mockPosts, demoComments } from './constants';
+import { Comment } from './types';
+
 import HomePage from './pages/HomePage';
 import BlogPostPage from './pages/BlogPostPage';
 import AboutPage from './pages/AboutPage';
@@ -24,6 +27,37 @@ const ScrollToTop: React.FC = () => {
 };
 
 const App: React.FC = () => {
+    React.useEffect(() => {
+        const seedInitialComments = () => {
+            if (typeof window === 'undefined' || window.localStorage.getItem('comments_seeded')) {
+                return;
+            }
+
+            const postMap = new Map(mockPosts.map(p => [p.id, p.slug]));
+
+            Object.entries(demoComments).forEach(([postId, comments]) => {
+                const slug = postMap.get(Number(postId));
+                if (slug) {
+                    const commentsToStore: Comment[] = comments.map((comment, index) => ({
+                        ...comment,
+                        id: new Date(Date.now() - (Number(postId) * 100000) - (index * 60000)).toISOString(),
+                        date: new Date(Date.now() - (Number(postId) * 100000) - (index * 60000)).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                        }),
+                        parentId: null,
+                    }));
+                    window.localStorage.setItem(`comments-${slug}`, JSON.stringify(commentsToStore));
+                }
+            });
+
+            window.localStorage.setItem('comments_seeded', 'true');
+        };
+
+        seedInitialComments();
+    }, []);
+
     return (
         <ThemeProvider defaultTheme="dark" storageKey="lade-stack-blog-theme">
             <div className="flex flex-col min-h-screen bg-background text-foreground font-sans transition-colors duration-300">

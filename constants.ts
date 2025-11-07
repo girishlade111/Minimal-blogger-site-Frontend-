@@ -1,4 +1,4 @@
-import { Post, Author } from './types';
+import { Post, Author, Comment } from './types';
 
 export const mockAuthors: { [key: string]: Author } = {
   'Girish Lade': {
@@ -319,3 +319,30 @@ export const testimonials = [
         title: "UI/UX Designer"
     }
 ];
+
+export const demoComments: { [key: number]: Omit<Comment, 'id' | 'date' | 'parentId'>[] } = {
+  1: [ // How AI is Changing Modern Businesses
+    { author: 'AI Enthusiast', text: 'This is a fantastic overview. The impact on decision-making is something we are already seeing in our company.' },
+    { author: 'Business Strategist', text: 'Really appreciate the balanced view, covering both startups and enterprises. Well written!' },
+  ],
+  2: [ // Designing for Clarity: The Art of Minimal UI
+    { author: 'UX Designer', text: 'This article perfectly captures the essence of minimalism. It\'s not about less, but about purpose. Bookmarked!' },
+    { author: 'Frontend Dev', text: 'The point about performance is often overlooked. A minimal UI is a faster UI. Great read.' },
+  ],
+  4: [ // The Future of Frontend: A 2026 Outlook
+    { author: 'Tech Futurist', text: 'WebAssembly is definitely the future. Exciting times ahead for frontend developers.' },
+  ],
+  5: [ // Getting Started with Docker and Containers
+    { author: 'DevOps Engineer', text: 'A solid introduction to Docker. This is a must-read for any developer looking to streamline their workflow.' },
+  ],
+  6: [ // The Psychology of Color in UI Design
+    { author: 'Creative Director', text: 'Color theory is so crucial. Thanks for breaking it down in a way that is easy to understand and apply to real-world projects.' },
+  ],
+  8: [ // Building a RESTful API with Node.js and Express
+    { author: 'Backend Coder', text: 'The code example is clean and easy to follow. Perfect for beginners.' },
+    { author: 'API Architect', text: 'Good to see best practices being emphasized. This is a great starting point for building robust APIs.' },
+  ],
+  12: [ // The Importance of Accessibility in Web Design
+      { author: 'Inclusive Designer', text: 'Thank you for this! Accessibility is not a feature, it\'s a necessity. Every developer should read this.' },
+  ],
+};
