@@ -157,6 +157,21 @@ export const mockPosts: Post[] = [
       Node.js and Express form a powerful and popular combination for building fast and scalable backend services. This tutorial will guide you through the process of creating a complete RESTful API.
       We'll cover everything from setting up your project and defining routes to handling requests, connecting to a database, and implementing authentication.
       <br/><br/>
+      Here's a simple example of an Express server:
+[CODE language="javascript"]
+import express from 'express';
+
+const app = express();
+const port = 3000;
+
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
+app.listen(port, () => {
+  console.log(\`Example app listening at http://localhost:\${port}\`);
+});
+[/CODE]
       By the end of this guide, you will have a solid understanding of backend development principles and a working API that can serve as a foundation for your own applications. We will focus on best practices to ensure your API is maintainable, secure, and ready for production.
     `
   },

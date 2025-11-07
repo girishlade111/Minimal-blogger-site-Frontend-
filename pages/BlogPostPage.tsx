@@ -6,10 +6,56 @@ import { SocialShareButtons } from '../components/SocialShareButtons';
 import { BlogCard } from '../components/BlogCard';
 import { CommentsSection } from '../components/CommentsSection';
 import { AuthorBio } from '../components/AuthorBio';
+import { CodeSnippet } from '../components/CodeSnippet';
 
 const ArrowLeftIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
 );
+
+const parseContent = (content: string): React.ReactNode[] => {
+    const nodes: React.ReactNode[] = [];
+    const regex = /\[CODE language="(.+?)"\]([\s\S]+?)\[\/CODE\]/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(content)) !== null) {
+        const [fullMatch, language, code] = match;
+        const precedingText = content.substring(lastIndex, match.index);
+
+        if (precedingText.trim()) {
+            nodes.push(
+                <div
+                    key={`text-${lastIndex}`}
+                    className="prose prose-lg dark:prose-invert max-w-none"
+                    dangerouslySetInnerHTML={{ __html: precedingText }}
+                />
+            );
+        }
+
+        nodes.push(
+            <CodeSnippet
+                key={`code-${match.index}`}
+                language={language.trim()}
+                code={code.trim()}
+            />
+        );
+        
+        lastIndex = match.index + fullMatch.length;
+    }
+
+    const remainingText = content.substring(lastIndex);
+    if (remainingText.trim()) {
+        nodes.push(
+            <div
+                key={`text-${lastIndex}`}
+                className="prose prose-lg dark:prose-invert max-w-none"
+                dangerouslySetInnerHTML={{ __html: remainingText }}
+            />
+        );
+    }
+
+    return nodes;
+};
 
 
 const BlogPostPage: React.FC = () => {
@@ -91,6 +137,8 @@ const BlogPostPage: React.FC = () => {
             return hasCommonCategory || hasCommonTag;
         }).slice(0, 2); // Limit to 2 related posts
     }, [post]);
+    
+    const parsedContent = useMemo(() => post ? parseContent(post.content) : [], [post]);
 
     if (!post) {
         return (
@@ -137,10 +185,10 @@ const BlogPostPage: React.FC = () => {
                         height={600}
                         className="w-full rounded-lg shadow-lg mb-8 aspect-video object-cover"
                     />
-                    <div
-                        className="prose prose-lg dark:prose-invert max-w-none"
-                        dangerouslySetInnerHTML={{ __html: post.content }}
-                    />
+                    
+                    <div>
+                        {parsedContent.map((node, index) => <React.Fragment key={index}>{node}</React.Fragment>)}
+                    </div>
                     
                     <AuthorBio authorName={post.author} />
                     
