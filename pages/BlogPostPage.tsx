@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { mockPosts } from '../constants';
 import { ScrollProgressBar } from '../components/ScrollProgressBar';
 import { SocialShareButtons } from '../components/SocialShareButtons';
+import { BlogCard } from '../components/BlogCard';
 
 const ArrowLeftIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
@@ -12,6 +13,22 @@ const ArrowLeftIcon = (props: React.SVGProps<SVGSVGElement>) => (
 const BlogPostPage: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const post = mockPosts.find((p) => p.slug === slug);
+
+    const relatedPosts = useMemo(() => {
+        if (!post) return [];
+    
+        const currentPostTags = post.tags || [];
+        const currentPostCategories = post.categories || [];
+    
+        return mockPosts.filter(p => {
+            if (p.id === post.id) return false;
+    
+            const hasCommonCategory = p.categories.some(cat => currentPostCategories.includes(cat));
+            const hasCommonTag = (p.tags || []).some(tag => currentPostTags.includes(tag));
+    
+            return hasCommonCategory || hasCommonTag;
+        }).slice(0, 2); // Limit to 2 related posts
+    }, [post]);
 
     if (!post) {
         return (
@@ -27,31 +44,45 @@ const BlogPostPage: React.FC = () => {
     return (
         <>
             <ScrollProgressBar />
-            <article className="max-w-3xl mx-auto animate-fade-in">
-                <header className="mb-8 text-center">
-                    <h1 className="text-4xl font-extrabold tracking-tight text-foreground lg:text-5xl mb-4">
-                        {post.title}
-                    </h1>
-                    <div className="text-sm text-muted-foreground">
-                        <span>By {post.author}</span>
-                        <span className="mx-2">•</span>
-                        <span>{post.date}</span>
+            <div className="animate-fade-in">
+                <article className="max-w-3xl mx-auto">
+                    <header className="mb-8 text-center">
+                        <h1 className="text-4xl font-extrabold tracking-tight text-foreground lg:text-5xl mb-4">
+                            {post.title}
+                        </h1>
+                        <div className="text-sm text-muted-foreground">
+                            <span>By {post.author}</span>
+                            <span className="mx-2">•</span>
+                            <span>{post.date}</span>
+                        </div>
+                    </header>
+                    <img
+                        src={post.image}
+                        alt={post.title}
+                        width={1200}
+                        height={600}
+                        className="w-full rounded-lg shadow-lg mb-8 aspect-video object-cover"
+                    />
+                    <div
+                        className="prose prose-lg dark:prose-invert max-w-none text-foreground leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: post.content }}
+                    />
+                    <div className="mt-12 border-t border-border/40 pt-8 flex justify-center">
+                         <SocialShareButtons post={post} />
                     </div>
-                </header>
-                <img
-                    src={post.image}
-                    alt={post.title}
-                    width={1200}
-                    height={600}
-                    className="w-full rounded-lg shadow-lg mb-8 aspect-video object-cover"
-                />
-                <div
-                    className="prose prose-lg dark:prose-invert max-w-none text-foreground leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: post.content }}
-                />
-                <div className="mt-12 flex flex-col sm:flex-row justify-between items-center gap-6 border-t border-border/40 pt-8">
-                    <SocialShareButtons post={post} />
-                    <Link
+                </article>
+
+                {relatedPosts.length > 0 && (
+                     <section className="max-w-5xl mx-auto mt-16" aria-labelledby="related-posts-heading">
+                        <h2 id="related-posts-heading" className="text-3xl font-bold text-center mb-8">Related Posts</h2>
+                        <div className="grid gap-8 sm:grid-cols-2">
+                            {relatedPosts.map((p) => <BlogCard key={p.id} post={p} />)}
+                        </div>
+                    </section>
+                )}
+
+                <div className="text-center mt-16">
+                     <Link
                         to="/"
                         className="inline-flex items-center gap-2 rounded-md bg-secondary text-secondary-foreground px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                     >
@@ -59,7 +90,7 @@ const BlogPostPage: React.FC = () => {
                         Back to All Posts
                     </Link>
                 </div>
-            </article>
+            </div>
         </>
     );
 };
