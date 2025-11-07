@@ -158,7 +158,7 @@ const BlogPostPage: React.FC = () => {
                 <div className="text-center mt-16">
                      <Link
                         to="/"
-                        className="inline-flex items-center gap-2 rounded-md bg-secondary text-secondary-foreground px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                        className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90"
                     >
                         <ArrowLeftIcon className="h-4 w-4" />
                         Back to All Posts
