@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Post } from '../types';
+import { Post, Comment } from '../types';
 
 const CommentIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -10,10 +11,25 @@ const CommentIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 interface FeaturedBlogCardProps {
     post: Post;
-    commentCount?: number;
 }
 
-export const FeaturedBlogCard: React.FC<FeaturedBlogCardProps> = ({ post, commentCount }) => {
+const getCommentCount = (slug: string): number => {
+    if (typeof window === 'undefined') return 0;
+    try {
+        const item = window.localStorage.getItem(`comments-${slug}`);
+        if (item) {
+            const comments: Comment[] = JSON.parse(item);
+            return Array.isArray(comments) ? comments.length : 0;
+        }
+    } catch (error) {
+        console.error(`Error reading comments for slug ${slug} from localStorage`, error);
+    }
+    return 0;
+};
+
+export const FeaturedBlogCard: React.FC<FeaturedBlogCardProps> = ({ post }) => {
+    const commentCount = getCommentCount(post.slug);
+
     return (
         <Link to={`/blog/${post.slug}`} className="group block col-span-1" aria-label={`Read more about ${post.title}`}>
             <div className="flex flex-col h-full overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-2">

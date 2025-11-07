@@ -1,26 +1,12 @@
+
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { mockAuthors, mockPosts } from '../constants';
 import { BlogCard } from '../components/BlogCard';
-import { Comment } from '../types';
 
 const ExternalLinkIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
 );
-
-const getCommentCount = (slug: string): number => {
-    if (typeof window === 'undefined') return 0;
-    try {
-        const item = window.localStorage.getItem(`comments-${slug}`);
-        if (item) {
-            const comments: Comment[] = JSON.parse(item);
-            return Array.isArray(comments) ? comments.length : 0;
-        }
-    } catch (error) {
-        console.error(`Error reading comments for slug ${slug} from localStorage`, error);
-    }
-    return 0;
-};
 
 const AuthorPage: React.FC = () => {
     const { authorName: encodedAuthorName } = useParams<{ authorName: string }>();
@@ -79,7 +65,7 @@ const AuthorPage: React.FC = () => {
                 {authorPosts.length > 0 ? (
                      <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                         {authorPosts.map(post => (
-                            <BlogCard key={post.id} post={post} commentCount={getCommentCount(post.slug)} />
+                            <BlogCard key={post.id} post={post} />
                         ))}
                     </div>
                 ) : (

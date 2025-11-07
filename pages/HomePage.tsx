@@ -34,20 +34,6 @@ const iconMap: { [key: string]: React.FC<React.SVGProps<SVGSVGElement>> } = {
 
 const POSTS_PER_PAGE = 6;
 
-const getCommentCount = (slug: string): number => {
-    if (typeof window === 'undefined') return 0;
-    try {
-        const item = window.localStorage.getItem(`comments-${slug}`);
-        if (item) {
-            const comments: Comment[] = JSON.parse(item);
-            return Array.isArray(comments) ? comments.length : 0;
-        }
-    } catch (error) {
-        console.error(`Error reading comments for slug ${slug} from localStorage`, error);
-    }
-    return 0;
-};
-
 interface CommentWithPostInfo extends Comment {
     postSlug: string;
     postTitle: string;
@@ -174,7 +160,7 @@ const HomePage: React.FC = () => {
                     </h2>
                     <div className="grid gap-8 md:grid-cols-2">
                         {featuredPosts.map((post) => (
-                            <FeaturedBlogCard key={post.id} post={post} commentCount={getCommentCount(post.slug)} />
+                            <FeaturedBlogCard key={post.id} post={post} />
                         ))}
                     </div>
                 </section>
@@ -343,7 +329,7 @@ const HomePage: React.FC = () => {
                 {currentPosts.length > 0 ? (
                     <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 min-h-[550px]">
                         {currentPosts.map((post) => (
-                            <BlogCard key={post.id} post={post} commentCount={getCommentCount(post.slug)} />
+                            <BlogCard key={post.id} post={post} />
                         ))}
                     </div>
                 ) : (

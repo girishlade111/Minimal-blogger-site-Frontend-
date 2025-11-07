@@ -1,12 +1,12 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Post } from '../types';
+import { Post, Comment } from '../types';
 
 interface BlogCardProps {
     post: Post;
     highlightedTitle?: React.ReactNode;
     highlightedDescription?: React.ReactNode;
-    commentCount?: number;
 }
 
 const CommentIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -15,7 +15,23 @@ const CommentIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
-export const BlogCard: React.FC<BlogCardProps> = ({ post, highlightedTitle, highlightedDescription, commentCount }) => {
+const getCommentCount = (slug: string): number => {
+    if (typeof window === 'undefined') return 0;
+    try {
+        const item = window.localStorage.getItem(`comments-${slug}`);
+        if (item) {
+            const comments: Comment[] = JSON.parse(item);
+            return Array.isArray(comments) ? comments.length : 0;
+        }
+    } catch (error) {
+        console.error(`Error reading comments for slug ${slug} from localStorage`, error);
+    }
+    return 0;
+};
+
+export const BlogCard: React.FC<BlogCardProps> = ({ post, highlightedTitle, highlightedDescription }) => {
+    const commentCount = getCommentCount(post.slug);
+    
     return (
         <Link to={`/blog/${post.slug}`} className="group block h-full" aria-label={`Read more about ${post.title}`}>
             <div className="flex flex-col h-full overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02]">
