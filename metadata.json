@@ -1,5 +1,7 @@
 {
   "name": "Lade Stack Blog",
   "description": "A professional, minimal, and responsive blog website frontend. Built with React and TailwindCSS for a clean reading experience, featuring a homepage, blog post pages, about, and contact sections with a dark mode toggle.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "microphone"
+  ]
 }

@@ -4,7 +4,7 @@ import { ThemeToggle } from './ThemeToggle';
 import { SearchBar } from './SearchBar';
 
 const MenuIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
 );
 
 const XIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -30,21 +30,21 @@ export const Navbar: React.FC = () => {
     const navLinkClasses = "text-muted-foreground transition-colors hover:text-foreground";
     const activeNavLinkClasses = { color: 'hsl(var(--primary))', fontWeight: '500' };
 
-    const navLinks = (
+    const navLinksContent = (
         <>
-            <NavLink to="/" className={navLinkClasses} style={({ isActive }) => isActive ? activeNavLinkClasses : undefined} onClick={closeMenu}>Home</NavLink>
-            <NavLink to="/about" className={navLinkClasses} style={({ isActive }) => isActive ? activeNavLinkClasses : undefined} onClick={closeMenu}>About</NavLink>
-            <NavLink to="/contact" className={navLinkClasses} style={({ isActive }) => isActive ? activeNavLinkClasses : undefined} onClick={closeMenu}>Contact</NavLink>
+            <NavLink to="/" className={navLinkClasses} style={({ isActive }) => isActive ? activeNavLinkClasses : undefined} onClick={isMenuOpen ? closeMenu : undefined}>Home</NavLink>
+            <NavLink to="/about" className={navLinkClasses} style={({ isActive }) => isActive ? activeNavLinkClasses : undefined} onClick={isMenuOpen ? closeMenu : undefined}>About</NavLink>
+            <NavLink to="/contact" className={navLinkClasses} style={({ isActive }) => isActive ? activeNavLinkClasses : undefined} onClick={isMenuOpen ? closeMenu : undefined}>Contact</NavLink>
+            <NavLink to="/live" className={`${navLinkClasses} flex items-center gap-2`} style={({ isActive }) => isActive ? activeNavLinkClasses : undefined} onClick={isMenuOpen ? closeMenu : undefined}>
+                Live
+                <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+            </NavLink>
         </>
     );
-    
-    const desktopNavLinks = (
-         <>
-            <NavLink to="/" className={navLinkClasses} style={({ isActive }) => isActive ? activeNavLinkClasses : undefined}>Home</NavLink>
-            <NavLink to="/about" className={navLinkClasses} style={({ isActive }) => isActive ? activeNavLinkClasses : undefined}>About</NavLink>
-            <NavLink to="/contact" className={navLinkClasses} style={({ isActive }) => isActive ? activeNavLinkClasses : undefined}>Contact</NavLink>
-        </>
-    );
+
 
     return (
         <>
@@ -57,7 +57,7 @@ export const Navbar: React.FC = () => {
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center gap-6">
                         <nav className="flex items-center space-x-6 text-sm font-medium">
-                            {desktopNavLinks}
+                            {navLinksContent}
                         </nav>
                         <SearchBar />
                         <ThemeToggle />
@@ -86,7 +86,7 @@ export const Navbar: React.FC = () => {
                 >
                     <div className="container mx-auto px-4 h-full flex flex-col items-center justify-center gap-8">
                         <nav className="flex flex-col items-center gap-8 text-xl font-medium">
-                            {navLinks}
+                            {navLinksContent}
                         </nav>
                         <div className="w-full max-w-sm">
                            <SearchBar />
