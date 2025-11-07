@@ -23,39 +23,55 @@ const BlogPostPage: React.FC = () => {
         const originalTitle = document.title;
         document.title = `${post.title} | Lade Stack Blog`;
 
+        // Define all meta tags for the page
         const metaConfigs = [
+            // Standard SEO
             { attr: 'name' as const, key: 'description', content: post.description },
             { attr: 'name' as const, key: 'keywords', content: [...post.categories, ...(post.tags || [])].join(', ') },
+            { attr: 'name' as const, key: 'author', content: post.author },
+
+            // Open Graph (for Facebook, LinkedIn, etc.)
             { attr: 'property' as const, key: 'og:title', content: post.title },
             { attr: 'property' as const, key: 'og:description', content: post.description },
             { attr: 'property' as const, key: 'og:image', content: post.image },
             { attr: 'property' as const, key: 'og:url', content: window.location.href },
             { attr: 'property' as const, key: 'og:type', content: 'article' },
+            { attr: 'property' as const, key: 'og:site_name', content: 'Lade Stack Blog' },
+            { attr: 'property' as const, key: 'article:published_time', content: new Date(post.date).toISOString() },
+            { attr: 'property' as const, key: 'article:author', content: post.author },
+            ...(post.tags || []).map(tag => ({ attr: 'property' as const, key: 'article:tag', content: tag })),
+
+
+            // Twitter Card (for Twitter)
             { attr: 'name' as const, key: 'twitter:card', content: 'summary_large_image' },
             { attr: 'name' as const, key: 'twitter:title', content: post.title },
             { attr: 'name' as const, key: 'twitter:description', content: post.description },
             { attr: 'name' as const, key: 'twitter:image', content: post.image },
+            { attr: 'name' as const, key: 'twitter:site', content: '@LadeStack' }, // Fictional Twitter handle
+            { attr: 'name' as const, key: 'twitter:creator', content: `@${post.author.replace(/\s/g, '')}` }, // Assumed author handle
         ];
         
+        // Keep track of added tags to remove them on cleanup
+        const addedMetaTags: Element[] = [];
+
         // Create or update meta tags
-        metaConfigs.forEach(config => {
+        metaConfigs.flat().forEach(config => {
+            if (!config) return;
             let element = document.head.querySelector(`meta[${config.attr}='${config.key}']`);
             if (!element) {
                 element = document.createElement('meta');
                 element.setAttribute(config.attr, config.key);
                 document.head.appendChild(element);
+                addedMetaTags.push(element);
             }
             element.setAttribute('content', config.content);
         });
 
-        // Cleanup function to remove tags when the component unmounts
+        // Cleanup function to restore original title and remove added meta tags
         return () => {
             document.title = originalTitle;
-            metaConfigs.forEach(config => {
-                const element = document.head.querySelector(`meta[${config.attr}='${config.key}']`);
-                if (element) {
-                    element.remove();
-                }
+            addedMetaTags.forEach(tag => {
+                document.head.removeChild(tag);
             });
         };
     }, [post]);
