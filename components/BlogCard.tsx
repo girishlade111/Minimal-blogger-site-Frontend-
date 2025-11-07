@@ -18,7 +18,7 @@ const CommentIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export const BlogCard: React.FC<BlogCardProps> = ({ post, highlightedTitle, highlightedDescription, commentCount }) => {
     return (
         <Link to={`/blog/${post.slug}`} className="group block h-full" aria-label={`Read more about ${post.title}`}>
-            <div className="flex flex-col h-full overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+            <div className="flex flex-col h-full overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02]">
                 <img
                     src={post.image}
                     alt={post.title}
