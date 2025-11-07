@@ -1,8 +1,26 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { mockPosts } from '../constants';
 import { BlogCard } from '../components/BlogCard';
+import { Comment } from '../types';
 
 const POSTS_PER_PAGE = 2; // Set to 2 to demonstrate pagination with 3 posts
+
+const getCommentCount = (slug: string): number => {
+    if (typeof window === 'undefined') {
+        return 0;
+    }
+    try {
+        const item = window.localStorage.getItem(`comments-${slug}`);
+        if (item) {
+            const comments: Comment[] = JSON.parse(item);
+            return Array.isArray(comments) ? comments.length : 0;
+        }
+    } catch (error) {
+        console.error(`Error reading comments for slug ${slug} from localStorage`, error);
+    }
+    return 0;
+};
+
 
 const HomePage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -94,7 +112,7 @@ const HomePage: React.FC = () => {
             {currentPosts.length > 0 ? (
                 <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 min-h-[550px]">
                     {currentPosts.map((post) => (
-                        <BlogCard key={post.id} post={post} />
+                        <BlogCard key={post.id} post={post} commentCount={getCommentCount(post.slug)} />
                     ))}
                 </div>
             ) : (

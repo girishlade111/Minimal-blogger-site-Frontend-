@@ -6,9 +6,16 @@ interface BlogCardProps {
     post: Post;
     highlightedTitle?: React.ReactNode;
     highlightedDescription?: React.ReactNode;
+    commentCount?: number;
 }
 
-export const BlogCard: React.FC<BlogCardProps> = ({ post, highlightedTitle, highlightedDescription }) => {
+const CommentIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+);
+
+export const BlogCard: React.FC<BlogCardProps> = ({ post, highlightedTitle, highlightedDescription, commentCount }) => {
     return (
         <Link to={`/blog/${post.slug}`} className="group block">
             <div className="flex flex-col h-full overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1">
@@ -43,6 +50,15 @@ export const BlogCard: React.FC<BlogCardProps> = ({ post, highlightedTitle, high
                         <span>{post.author}</span>
                         <span className="mx-2">•</span>
                         <span>{post.date}</span>
+                        {typeof commentCount === 'number' && (
+                            <>
+                                <span className="mx-2">•</span>
+                                <div className="flex items-center gap-1">
+                                    <CommentIcon className="h-3 w-3" />
+                                    <span>{commentCount}</span>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
