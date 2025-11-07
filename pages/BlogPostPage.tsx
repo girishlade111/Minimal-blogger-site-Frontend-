@@ -6,6 +6,7 @@ import { ScrollProgressBar } from '../components/ScrollProgressBar';
 import { SocialShareButtons } from '../components/SocialShareButtons';
 import { BlogCard } from '../components/BlogCard';
 import { CommentsSection } from '../components/CommentsSection';
+import { AuthorBio } from '../components/AuthorBio';
 
 const ArrowLeftIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
@@ -112,6 +113,9 @@ const BlogPostPage: React.FC = () => {
                         className="prose prose-lg dark:prose-invert max-w-none text-foreground leading-relaxed"
                         dangerouslySetInnerHTML={{ __html: post.content }}
                     />
+                    
+                    <AuthorBio authorName={post.author} />
+                    
                     <div className="mt-12 border-t border-border/40 pt-8 flex justify-center">
                          <SocialShareButtons post={post} />
                     </div>

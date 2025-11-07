@@ -1,4 +1,14 @@
-import { Post } from './types';
+
+import { Post, Author } from './types';
+
+export const mockAuthors: { [key: string]: Author } = {
+  'Girish Lade': {
+    name: 'Girish Lade',
+    bio: 'Girish is a passionate software engineer with a love for clean code, elegant design, and exploring the frontiers of technology. He founded Lade Stack to share knowledge and build a community of developers and creators.',
+    avatar: 'https://i.pravatar.cc/150?u=girish-lade',
+    website: 'https://ladestack.in',
+  }
+};
 
 export const mockPosts: Post[] = [
   {

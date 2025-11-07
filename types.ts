@@ -18,3 +18,10 @@ export interface Comment {
   text: string;
   date: string;
 }
+
+export interface Author {
+  name: string;
+  bio: string;
+  avatar: string;
+  website?: string;
+}
