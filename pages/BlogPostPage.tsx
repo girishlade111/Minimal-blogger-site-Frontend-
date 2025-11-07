@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { mockPosts } from '../constants';
 import { ScrollProgressBar } from '../components/ScrollProgressBar';
+import { SocialShareButtons } from '../components/SocialShareButtons';
 
 const ArrowLeftIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
@@ -49,13 +49,14 @@ const BlogPostPage: React.FC = () => {
                     className="prose prose-lg dark:prose-invert max-w-none text-foreground leading-relaxed"
                     dangerouslySetInnerHTML={{ __html: post.content }}
                 />
-                <div className="mt-12 text-center">
+                <div className="mt-12 flex flex-col sm:flex-row justify-between items-center gap-6 border-t border-border/40 pt-8">
+                    <SocialShareButtons post={post} />
                     <Link
                         to="/"
                         className="inline-flex items-center gap-2 rounded-md bg-secondary text-secondary-foreground px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                     >
                         <ArrowLeftIcon className="h-4 w-4" />
-                        Back to Home
+                        Back to All Posts
                     </Link>
                 </div>
             </article>
