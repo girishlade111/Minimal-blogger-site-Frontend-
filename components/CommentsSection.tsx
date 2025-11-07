@@ -3,13 +3,13 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Comment } from '../types';
 
 const ReplyIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
         <polyline points="9 17 4 12 9 7" />
         <path d="M20 18v-2a4 4 0 0 0-4-4H4" />
     </svg>
 );
 const XIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
 );
 
 
@@ -155,7 +155,7 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({ postSlug }) =>
                             className="rounded-md border border-input bg-background px-3 py-1.5 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
                             aria-label="Sort comments"
                         >
-                            <option value="newest">Newest First</option>
+                            <option value="newest">by Date (Newest)</option>
                             <option value="oldest">Oldest First</option>
                             <option value="author">Author A-Z</option>
                         </select>
