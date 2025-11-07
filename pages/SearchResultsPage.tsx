@@ -3,6 +3,33 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { mockPosts } from '../constants';
 import { BlogCard } from '../components/BlogCard';
 
+const highlightText = (text: string, query: string): React.ReactNode => {
+    if (!query.trim()) {
+        return text;
+    }
+    
+    const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const safeQuery = escapeRegExp(query.trim());
+
+    if (!safeQuery) return text;
+
+    const parts = text.split(new RegExp(`(${safeQuery})`, 'gi'));
+    
+    return (
+        <>
+            {parts.map((part, index) =>
+                part.toLowerCase() === query.trim().toLowerCase() ? (
+                    <mark key={index} className="bg-primary/30 rounded font-semibold">
+                        {part}
+                    </mark>
+                ) : (
+                    part
+                )
+            )}
+        </>
+    );
+};
+
 const SearchResultsPage: React.FC = () => {
     const [searchParams] = useSearchParams();
     const query = searchParams.get('q') || '';
@@ -17,6 +44,7 @@ const SearchResultsPage: React.FC = () => {
 
         return mockPosts.filter(post =>
             post.title.toLowerCase().includes(lowercasedQuery) ||
+            post.description.toLowerCase().includes(lowercasedQuery) ||
             stripHtml(post.content.toLowerCase()).includes(lowercasedQuery)
         );
     }, [query]);
@@ -37,7 +65,12 @@ const SearchResultsPage: React.FC = () => {
             {filteredPosts.length > 0 ? (
                 <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                     {filteredPosts.map((post) => (
-                        <BlogCard key={post.id} post={post} />
+                        <BlogCard 
+                          key={post.id} 
+                          post={post}
+                          highlightedTitle={highlightText(post.title, query)}
+                          highlightedDescription={highlightText(post.description, query)}
+                        />
                     ))}
                 </div>
             ) : (

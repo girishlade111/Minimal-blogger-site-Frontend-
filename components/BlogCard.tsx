@@ -4,9 +4,11 @@ import { Post } from '../types';
 
 interface BlogCardProps {
     post: Post;
+    highlightedTitle?: React.ReactNode;
+    highlightedDescription?: React.ReactNode;
 }
 
-export const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
+export const BlogCard: React.FC<BlogCardProps> = ({ post, highlightedTitle, highlightedDescription }) => {
     return (
         <Link to={`/blog/${post.slug}`} className="group block">
             <div className="flex flex-col h-full overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1">
@@ -32,10 +34,10 @@ export const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
                         ))}
                     </div>
                     <h3 className="text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
-                        {post.title}
+                        {highlightedTitle || post.title}
                     </h3>
                     <p className="text-muted-foreground text-sm mb-4 flex-grow">
-                        {post.description}
+                        {highlightedDescription || post.description}
                     </p>
                     <div className="flex items-center text-xs text-muted-foreground mt-auto">
                         <span>{post.author}</span>
