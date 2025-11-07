@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Post } from '../types';
 
 interface SocialShareButtonsProps {
@@ -26,7 +26,17 @@ const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
+const CopyIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+);
+
+const CheckIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="20 6 9 17 4 12"></polyline></svg>
+);
+
+
 export const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ post }) => {
+    const [isCopied, setIsCopied] = useState(false);
     const postUrl = encodeURIComponent(window.location.href);
     const postTitle = encodeURIComponent(post.title);
 
@@ -41,6 +51,16 @@ export const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ post }) 
         { name: 'LinkedIn', icon: LinkedInIcon, href: shareLinks.linkedin, colorClass: 'hover:text-[#0A66C2]' },
         { name: 'Facebook', icon: FacebookIcon, href: shareLinks.facebook, colorClass: 'hover:text-[#1877F2]' },
     ];
+
+    const handleCopyLink = async () => {
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            setIsCopied(true);
+            setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+        } catch (err) {
+            console.error('Failed to copy link: ', err);
+        }
+    };
 
     return (
         <div className="flex items-center gap-4">
@@ -58,6 +78,17 @@ export const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ post }) 
                         <Icon className="w-5 h-5 fill-current" />
                     </a>
                 ))}
+                 <button
+                    onClick={handleCopyLink}
+                    aria-label={isCopied ? "Link copied" : "Copy link"}
+                    className="p-2 rounded-full text-muted-foreground transition-colors duration-200 hover:bg-accent hover:text-foreground"
+                >
+                    {isCopied ? (
+                        <CheckIcon className="w-5 h-5 text-green-500" />
+                    ) : (
+                        <CopyIcon className="w-5 h-5" />
+                    )}
+                </button>
             </div>
         </div>
     );
