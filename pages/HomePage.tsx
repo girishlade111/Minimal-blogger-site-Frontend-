@@ -25,27 +25,30 @@ const getCommentCount = (slug: string): number => {
 const HomePage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [activeFilter, setActiveFilter] = useState({ type: 'all', name: 'All' });
+    const [postStatusFilter, setPostStatusFilter] = useState<'published' | 'draft'>('published');
 
     const allCategories = useMemo(() => [...new Set(mockPosts.flatMap(p => p.categories))], []);
     const allTags = useMemo(() => [...new Set(mockPosts.flatMap(p => p.tags || []))], []);
 
     const filteredPosts = useMemo(() => {
+        const statusFilteredPosts = mockPosts.filter(p => p.status === postStatusFilter);
+        
         if (activeFilter.type === 'all') {
-            return mockPosts;
+            return statusFilteredPosts;
         }
         if (activeFilter.type === 'category') {
-            return mockPosts.filter(post => post.categories.includes(activeFilter.name));
+            return statusFilteredPosts.filter(post => post.categories.includes(activeFilter.name));
         }
         if (activeFilter.type === 'tag') {
-            return mockPosts.filter(post => post.tags?.includes(activeFilter.name));
+            return statusFilteredPosts.filter(post => post.tags?.includes(activeFilter.name));
         }
-        return mockPosts;
-    }, [activeFilter]);
+        return statusFilteredPosts;
+    }, [activeFilter, postStatusFilter]);
 
-    // Reset to page 1 when filter changes
+    // Reset to page 1 when filters change
     useEffect(() => {
         setCurrentPage(1);
-    }, [activeFilter]);
+    }, [activeFilter, postStatusFilter]);
     
     const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
     const indexOfLastPost = currentPage * POSTS_PER_PAGE;
@@ -109,6 +112,32 @@ const HomePage: React.FC = () => {
                 </div>
             </div>
 
+            <div className="border-b border-border/40">
+                <div className="flex justify-center space-x-4">
+                     <button
+                        onClick={() => setPostStatusFilter('published')}
+                        className={`pb-2 text-sm font-semibold transition-colors ${
+                            postStatusFilter === 'published'
+                                ? 'text-primary border-b-2 border-primary'
+                                : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                    >
+                        Published ({mockPosts.filter(p => p.status === 'published').length})
+                    </button>
+                    <button
+                        onClick={() => setPostStatusFilter('draft')}
+                        className={`pb-2 text-sm font-semibold transition-colors ${
+                            postStatusFilter === 'draft'
+                                ? 'text-primary border-b-2 border-primary'
+                                : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                    >
+                        Drafts ({mockPosts.filter(p => p.status === 'draft').length})
+                    </button>
+                </div>
+            </div>
+
+
             {currentPosts.length > 0 ? (
                 <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 min-h-[550px]">
                     {currentPosts.map((post) => (
@@ -117,7 +146,12 @@ const HomePage: React.FC = () => {
                 </div>
             ) : (
                 <div className="text-center py-20 min-h-[550px] flex flex-col justify-center">
-                    <p className="text-lg text-muted-foreground">No posts found for "{activeFilter.name}".</p>
+                    <p className="text-lg text-muted-foreground">
+                         {activeFilter.type !== 'all' 
+                            ? `No ${postStatusFilter} posts found for "${activeFilter.name}".`
+                            : `No ${postStatusFilter} posts found.`
+                        }
+                    </p>
                 </div>
             )}
 

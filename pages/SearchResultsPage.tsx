@@ -46,9 +46,11 @@ const SearchResultsPage: React.FC = () => {
         const stripHtml = (html: string) => html.replace(/<[^>]*>?/gm, '');
 
         return mockPosts.filter(post =>
-            post.title.toLowerCase().includes(lowercasedQuery) ||
-            post.description.toLowerCase().includes(lowercasedQuery) ||
-            stripHtml(post.content.toLowerCase()).includes(lowercasedQuery)
+            post.status === 'published' && (
+                post.title.toLowerCase().includes(lowercasedQuery) ||
+                post.description.toLowerCase().includes(lowercasedQuery) ||
+                stripHtml(post.content.toLowerCase()).includes(lowercasedQuery)
+            )
         );
     }, [query]);
 

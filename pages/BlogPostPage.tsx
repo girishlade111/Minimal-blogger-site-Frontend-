@@ -1,4 +1,3 @@
-
 import React, { useMemo, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { mockPosts } from '../constants';
@@ -68,7 +67,7 @@ const BlogPostPage: React.FC = () => {
         const currentPostCategories = post.categories || [];
     
         return mockPosts.filter(p => {
-            if (p.id === post.id) return false;
+            if (p.id === post.id || p.status !== 'published') return false;
     
             const hasCommonCategory = p.categories.some(cat => currentPostCategories.includes(cat));
             const hasCommonTag = (p.tags || []).some(tag => currentPostTags.includes(tag));
@@ -94,6 +93,13 @@ const BlogPostPage: React.FC = () => {
             <div className="animate-fade-in">
                 <article ref={articleRef} className="max-w-3xl mx-auto">
                     <header className="mb-8 text-center">
+                        {post.status === 'draft' && (
+                            <div className="mb-4 text-center">
+                                <span className="inline-block bg-yellow-500/20 text-yellow-500 dark:text-yellow-400 rounded-full px-4 py-1 text-sm font-bold tracking-wider uppercase">
+                                    Draft
+                                </span>
+                            </div>
+                        )}
                         <h1 className="text-4xl font-extrabold tracking-tight text-foreground lg:text-5xl mb-4">
                             {post.title}
                         </h1>

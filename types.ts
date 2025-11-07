@@ -1,4 +1,3 @@
-
 export interface Post {
   id: number;
   title: string;
@@ -10,6 +9,7 @@ export interface Post {
   content: string;
   categories: string[];
   tags?: string[];
+  status: 'published' | 'draft';
 }
 
 export interface Comment {
