@@ -32,7 +32,7 @@ const iconMap: { [key: string]: React.FC<React.SVGProps<SVGSVGElement>> } = {
     BrainCircuitIcon, CodeIcon, PaletteIcon, CloudIcon, BookOpenIcon, TrendUpIcon, LightbulbIcon
 };
 
-const POSTS_PER_PAGE = 2;
+const POSTS_PER_PAGE = 6;
 
 const getCommentCount = (slug: string): number => {
     if (typeof window === 'undefined') return 0;
@@ -51,7 +51,7 @@ const getCommentCount = (slug: string): number => {
 
 const HomePage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [activeFilters, setActiveFilters] = useState<{ type: 'category' | 'tag'; name: string }[]>([]);
+    const [activeFilters, setActiveFilters] = useState<{ type: 'category' | 'tag' | 'author'; name: string }[]>([]);
     const [postStatusFilter, setPostStatusFilter] = useState<'published' | 'draft'>('published');
 
     const { featuredPosts, regularPosts, draftPosts } = useMemo(() => {
@@ -66,6 +66,7 @@ const HomePage: React.FC = () => {
 
     const allCategories = useMemo(() => [...new Set(mockPosts.flatMap(p => p.categories))], []);
     const allTags = useMemo(() => [...new Set(mockPosts.flatMap(p => p.tags || []))], []);
+    const allAuthors = useMemo(() => [...new Set(mockPosts.map(p => p.author))], []);
 
     const postsToFilter = postStatusFilter === 'published' ? regularPosts : draftPosts;
 
@@ -79,6 +80,9 @@ const HomePage: React.FC = () => {
                 }
                 if (filter.type === 'tag') {
                     return post.tags?.includes(filter.name);
+                }
+                if (filter.type === 'author') {
+                    return post.author === filter.name;
                 }
                 return false;
             });
@@ -95,7 +99,7 @@ const HomePage: React.FC = () => {
     const goToNextPage = () => setCurrentPage((page) => Math.min(page + 1, totalPages));
     const goToPreviousPage = () => setCurrentPage((page) => Math.max(page - 1, 1));
     
-    const handleFilterClick = (type: 'category' | 'tag', name: string) => {
+    const handleFilterClick = (type: 'category' | 'tag' | 'author', name: string) => {
         setActiveFilters(prevFilters => {
             const existingFilterIndex = prevFilters.findIndex(f => f.type === type && f.name === name);
             if (existingFilterIndex > -1) {
@@ -263,6 +267,25 @@ const HomePage: React.FC = () => {
                                         }`}
                                     >
                                         {tag}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                    <div>
+                        <h3 className="text-center text-sm font-semibold uppercase text-muted-foreground tracking-wider mb-4">Authors</h3>
+                        <div className="flex flex-wrap items-center justify-center gap-2">
+                             {allAuthors.map(author => {
+                                const isActive = activeFilters.some(f => f.type === 'author' && f.name === author);
+                                return (
+                                    <button
+                                        key={author}
+                                        onClick={() => handleFilterClick('author', author)}
+                                        className={`rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                                            isActive ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                                        }`}
+                                    >
+                                        {author}
                                     </button>
                                 );
                             })}
