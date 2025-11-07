@@ -1,5 +1,5 @@
 
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { mockPosts } from '../constants';
 import { ScrollProgressBar } from '../components/ScrollProgressBar';
@@ -16,6 +16,7 @@ const ArrowLeftIcon = (props: React.SVGProps<SVGSVGElement>) => (
 const BlogPostPage: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const post = mockPosts.find((p) => p.slug === slug);
+    const articleRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
         if (!post) return;
@@ -89,9 +90,9 @@ const BlogPostPage: React.FC = () => {
 
     return (
         <>
-            <ScrollProgressBar />
+            <ScrollProgressBar targetRef={articleRef} />
             <div className="animate-fade-in">
-                <article className="max-w-3xl mx-auto">
+                <article ref={articleRef} className="max-w-3xl mx-auto">
                     <header className="mb-8 text-center">
                         <h1 className="text-4xl font-extrabold tracking-tight text-foreground lg:text-5xl mb-4">
                             {post.title}
