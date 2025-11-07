@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { mockPosts } from '../constants';
 import { ScrollProgressBar } from '../components/ScrollProgressBar';
@@ -13,6 +13,49 @@ const ArrowLeftIcon = (props: React.SVGProps<SVGSVGElement>) => (
 const BlogPostPage: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const post = mockPosts.find((p) => p.slug === slug);
+
+    useEffect(() => {
+        if (!post) return;
+
+        const originalTitle = document.title;
+        document.title = `${post.title} | Lade Stack Blog`;
+
+        const metaConfigs = [
+            { attr: 'name' as const, key: 'description', content: post.description },
+            { attr: 'name' as const, key: 'keywords', content: [...post.categories, ...(post.tags || [])].join(', ') },
+            { attr: 'property' as const, key: 'og:title', content: post.title },
+            { attr: 'property' as const, key: 'og:description', content: post.description },
+            { attr: 'property' as const, key: 'og:image', content: post.image },
+            { attr: 'property' as const, key: 'og:url', content: window.location.href },
+            { attr: 'property' as const, key: 'og:type', content: 'article' },
+            { attr: 'name' as const, key: 'twitter:card', content: 'summary_large_image' },
+            { attr: 'name' as const, key: 'twitter:title', content: post.title },
+            { attr: 'name' as const, key: 'twitter:description', content: post.description },
+            { attr: 'name' as const, key: 'twitter:image', content: post.image },
+        ];
+        
+        // Create or update meta tags
+        metaConfigs.forEach(config => {
+            let element = document.head.querySelector(`meta[${config.attr}='${config.key}']`);
+            if (!element) {
+                element = document.createElement('meta');
+                element.setAttribute(config.attr, config.key);
+                document.head.appendChild(element);
+            }
+            element.setAttribute('content', config.content);
+        });
+
+        // Cleanup function to remove tags when the component unmounts
+        return () => {
+            document.title = originalTitle;
+            metaConfigs.forEach(config => {
+                const element = document.head.querySelector(`meta[${config.attr}='${config.key}']`);
+                if (element) {
+                    element.remove();
+                }
+            });
+        };
+    }, [post]);
 
     const relatedPosts = useMemo(() => {
         if (!post) return [];
