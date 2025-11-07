@@ -8,4 +8,5 @@ export interface Post {
   date: string;
   image: string;
   content: string;
+  categories: string[];
 }

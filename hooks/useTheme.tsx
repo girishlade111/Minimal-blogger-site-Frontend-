@@ -20,14 +20,13 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
-// Fix: Removed unused `...props` from the function signature and the provider element below.
-// This was causing a TypeScript inference issue that incorrectly reported the `children`
-// prop as missing when using the component.
-export function ThemeProvider({
+// Fix: Refactored from a function component to a React.FC to resolve a TypeScript
+// inference issue that incorrectly reported the `children` prop as missing.
+export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   children,
   defaultTheme = 'system',
   storageKey = 'vite-ui-theme',
-}: ThemeProviderProps) {
+}) => {
   const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   );
@@ -63,7 +62,7 @@ export function ThemeProvider({
       {children}
     </ThemeProviderContext.Provider>
   );
-}
+};
 
 export const useTheme = () => {
   const context = useContext(ThemeProviderContext);

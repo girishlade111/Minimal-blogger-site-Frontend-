@@ -20,6 +20,13 @@ export const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
                     className="w-full h-48 object-cover"
                 />
                 <div className="p-6 flex flex-col flex-grow">
+                    <div className="mb-2 flex flex-wrap gap-2">
+                        {post.categories.map((category) => (
+                            <span key={category} className="inline-block bg-secondary text-secondary-foreground rounded-full px-3 py-1 text-xs font-semibold">
+                                {category}
+                            </span>
+                        ))}
+                    </div>
                     <h3 className="text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
                         {post.title}
                     </h3>

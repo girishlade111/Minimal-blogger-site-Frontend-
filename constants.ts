@@ -10,6 +10,7 @@ export const mockPosts: Post[] = [
     author: 'Girish Lade',
     date: 'November 7, 2025',
     image: 'https://picsum.photos/seed/ai-business/800/400',
+    categories: ['AI', 'Business', 'Technology'],
     content: `
       Artificial Intelligence (AI) is no longer a futuristic concept; it's a present-day reality transforming industries.
       From automating mundane tasks to providing deep insights from vast datasets, AI is becoming an indispensable tool for modern businesses.
@@ -28,6 +29,7 @@ export const mockPosts: Post[] = [
     author: 'Girish Lade',
     date: 'November 5, 2025',
     image: 'https://picsum.photos/seed/minimal-ui/800/400',
+    categories: ['Design', 'UI/UX', 'Web Development'],
     content: `
       In a world saturated with information, simplicity is a luxury. Minimalist UI design embraces this principle, focusing on the essential elements to create a clean, uncluttered, and intuitive user experience.
       The core idea is to remove unnecessary distractions and guide the user's attention to what truly matters. This is achieved through generous use of whitespace, a limited color palette, and clear typography.
@@ -45,6 +47,7 @@ export const mockPosts: Post[] = [
     author: 'Girish Lade',
     date: 'November 2, 2025',
     image: 'https://picsum.photos/seed/serverless/800/400',
+    categories: ['Software Architecture', 'Cloud', 'Web Development'],
     content: `
       Serverless architecture is a cloud-computing execution model in which the cloud provider runs the server, and dynamically manages the allocation of machine resources.
       Pricing is based on the actual amount of resources consumed by an application, rather than on pre-purchased units of capacity. This can be a significant cost-saver for many applications.
