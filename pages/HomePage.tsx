@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { mockPosts, categoryDetails, whyReadItems, testimonials, mockAuthors } from '../constants';
 import { BlogCard } from '../components/BlogCard';
 import { FeaturedBlogCard } from '../components/FeaturedBlogCard';
-import { Comment } from '../types';
+import { Comment, Post } from '../types';
 
 const CodeIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
@@ -48,6 +48,10 @@ const getCommentCount = (slug: string): number => {
     return 0;
 };
 
+interface CommentWithPostInfo extends Comment {
+    postSlug: string;
+    postTitle: string;
+}
 
 const HomePage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -95,6 +99,40 @@ const HomePage: React.FC = () => {
     const indexOfLastPost = currentPage * POSTS_PER_PAGE;
     const indexOfFirstPost = indexOfLastPost - POSTS_PER_PAGE;
     const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+    
+    const recentComments = useMemo((): CommentWithPostInfo[] => {
+        if (typeof window === 'undefined') return [];
+
+        const allComments: CommentWithPostInfo[] = [];
+        const postTitleMap = new Map(mockPosts.map(p => [p.slug, p.title]));
+
+        for (let i = 0; i < window.localStorage.length; i++) {
+            const key = window.localStorage.key(i);
+            if (key && key.startsWith('comments-')) {
+                try {
+                    const slug = key.replace('comments-', '');
+                    const postTitle = postTitleMap.get(slug);
+                    if (!postTitle) continue;
+
+                    const storedComments: Comment[] = JSON.parse(window.localStorage.getItem(key) || '[]');
+                    if (Array.isArray(storedComments)) {
+                        const commentsWithPostInfo = storedComments.map(comment => ({
+                            ...comment,
+                            postSlug: slug,
+                            postTitle: postTitle,
+                        }));
+                        allComments.push(...commentsWithPostInfo);
+                    }
+                } catch (error) {
+                    console.error(`Error parsing comments from localStorage for key ${key}`, error);
+                }
+            }
+        }
+
+        allComments.sort((a, b) => b.id.localeCompare(a.id));
+
+        return allComments.slice(0, 3);
+    }, []);
 
     const goToNextPage = () => setCurrentPage((page) => Math.min(page + 1, totalPages));
     const goToPreviousPage = () => setCurrentPage((page) => Math.max(page - 1, 1));
@@ -103,10 +141,8 @@ const HomePage: React.FC = () => {
         setActiveFilters(prevFilters => {
             const existingFilterIndex = prevFilters.findIndex(f => f.type === type && f.name === name);
             if (existingFilterIndex > -1) {
-                // Remove the filter if it's already active
                 return prevFilters.filter((_, index) => index !== existingFilterIndex);
             } else {
-                // Add the filter if it's not active
                 return [...prevFilters, { type, name }];
             }
         });
@@ -332,6 +368,45 @@ const HomePage: React.FC = () => {
                         <button onClick={goToNextPage} disabled={currentPage === totalPages} className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Go to next page">
                             Next
                         </button>
+                    </div>
+                )}
+            </section>
+            
+            <div className="border-t border-border/40"></div>
+
+            <section aria-labelledby="recent-comments-heading" className="space-y-8">
+                <h2 id="recent-comments-heading" className="text-3xl font-bold tracking-tight text-center text-foreground sm:text-4xl">
+                    Recent Comments
+                </h2>
+                {recentComments.length > 0 ? (
+                    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
+                        {recentComments.map(comment => (
+                            <div key={comment.id} className="rounded-lg border bg-card text-card-foreground shadow-sm p-6 flex flex-col">
+                                <div className="flex items-start gap-4">
+                                    <div className="flex-shrink-0">
+                                        <span className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-secondary">
+                                            <span className="text-sm font-medium leading-none text-secondary-foreground">
+                                                {comment.author.charAt(0).toUpperCase()}
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-semibold text-foreground">{comment.author}</p>
+                                        <p className="text-xs text-muted-foreground">{comment.date}</p>
+                                    </div>
+                                </div>
+                                <blockquote className="mt-4 text-muted-foreground italic border-l-2 border-primary pl-4 text-sm flex-grow">
+                                    "{comment.text.length > 100 ? `${comment.text.substring(0, 100)}...` : comment.text}"
+                                </blockquote>
+                                <Link to={`/blog/${comment.postSlug}`} className="text-sm text-primary hover:underline mt-4 self-start">
+                                    on "{comment.postTitle}"
+                                </Link>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-10">
+                        <p className="text-muted-foreground">No recent comments to show.</p>
                     </div>
                 )}
             </section>
