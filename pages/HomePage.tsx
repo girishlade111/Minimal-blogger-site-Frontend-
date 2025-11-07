@@ -51,7 +51,7 @@ const getCommentCount = (slug: string): number => {
 
 const HomePage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [activeFilter, setActiveFilter] = useState({ type: 'all', name: 'All' });
+    const [activeFilters, setActiveFilters] = useState<{ type: 'category' | 'tag'; name: string }[]>([]);
     const [postStatusFilter, setPostStatusFilter] = useState<'published' | 'draft'>('published');
 
     const { featuredPosts, regularPosts, draftPosts } = useMemo(() => {
@@ -70,13 +70,22 @@ const HomePage: React.FC = () => {
     const postsToFilter = postStatusFilter === 'published' ? regularPosts : draftPosts;
 
     const filteredPosts = useMemo(() => {
-        if (activeFilter.type === 'all') return postsToFilter;
-        if (activeFilter.type === 'category') return postsToFilter.filter(post => post.categories.includes(activeFilter.name));
-        if (activeFilter.type === 'tag') return postsToFilter.filter(post => post.tags?.includes(activeFilter.name));
-        return postsToFilter;
-    }, [activeFilter, postsToFilter]);
+        if (activeFilters.length === 0) return postsToFilter;
 
-    useEffect(() => { setCurrentPage(1); }, [activeFilter, postStatusFilter]);
+        return postsToFilter.filter(post => {
+            return activeFilters.every(filter => {
+                if (filter.type === 'category') {
+                    return post.categories.includes(filter.name);
+                }
+                if (filter.type === 'tag') {
+                    return post.tags?.includes(filter.name);
+                }
+                return false;
+            });
+        });
+    }, [activeFilters, postsToFilter]);
+
+    useEffect(() => { setCurrentPage(1); }, [activeFilters, postStatusFilter]);
     
     const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
     const indexOfLastPost = currentPage * POSTS_PER_PAGE;
@@ -85,21 +94,19 @@ const HomePage: React.FC = () => {
 
     const goToNextPage = () => setCurrentPage((page) => Math.min(page + 1, totalPages));
     const goToPreviousPage = () => setCurrentPage((page) => Math.max(page - 1, 1));
-    const handleFilterClick = (type: 'all' | 'category' | 'tag', name: string) => setActiveFilter({ type, name });
-
-    const FilterButton: React.FC<{type: 'all' | 'category' | 'tag', name: string}> = ({ type, name }) => {
-        const isActive = activeFilter.type === type && activeFilter.name === name;
-        return (
-            <button
-                onClick={() => handleFilterClick(type, name)}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-                    isActive ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-                }`}
-            >
-                {name}
-            </button>
-        )
-    }
+    
+    const handleFilterClick = (type: 'category' | 'tag', name: string) => {
+        setActiveFilters(prevFilters => {
+            const existingFilterIndex = prevFilters.findIndex(f => f.type === type && f.name === name);
+            if (existingFilterIndex > -1) {
+                // Remove the filter if it's already active
+                return prevFilters.filter((_, index) => index !== existingFilterIndex);
+            } else {
+                // Add the filter if it's not active
+                return [...prevFilters, { type, name }];
+            }
+        });
+    };
 
     return (
         <div className="space-y-16 md:space-y-24">
@@ -214,18 +221,51 @@ const HomePage: React.FC = () => {
                         Latest Posts
                     </h2>
                     <div className="flex flex-wrap items-center justify-center gap-2">
-                        <FilterButton type="all" name="All" />
+                         <button
+                            onClick={() => setActiveFilters([])}
+                            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                                activeFilters.length === 0 ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                            }`}
+                        >
+                            All
+                        </button>
                     </div>
                     <div>
                         <h3 className="text-center text-sm font-semibold uppercase text-muted-foreground tracking-wider mb-4">Categories</h3>
                         <div className="flex flex-wrap items-center justify-center gap-2">
-                            {allCategories.map(category => <FilterButton key={category} type="category" name={category} />)}
+                            {allCategories.map(category => {
+                                const isActive = activeFilters.some(f => f.type === 'category' && f.name === category);
+                                return (
+                                    <button
+                                        key={category}
+                                        onClick={() => handleFilterClick('category', category)}
+                                        className={`rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                                            isActive ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                                        }`}
+                                    >
+                                        {category}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                     <div>
                         <h3 className="text-center text-sm font-semibold uppercase text-muted-foreground tracking-wider mb-4">Tags</h3>
                         <div className="flex flex-wrap items-center justify-center gap-2">
-                            {allTags.map(tag => <FilterButton key={tag} type="tag" name={tag} />)}
+                             {allTags.map(tag => {
+                                const isActive = activeFilters.some(f => f.type === 'tag' && f.name === tag);
+                                return (
+                                    <button
+                                        key={tag}
+                                        onClick={() => handleFilterClick('tag', tag)}
+                                        className={`rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                                            isActive ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                                        }`}
+                                    >
+                                        {tag}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
@@ -250,8 +290,8 @@ const HomePage: React.FC = () => {
                 ) : (
                     <div className="text-center py-20 min-h-[550px] flex flex-col justify-center">
                         <p className="text-lg text-muted-foreground">
-                            {activeFilter.type !== 'all' 
-                                ? `No ${postStatusFilter} posts found for "${activeFilter.name}".`
+                             {activeFilters.length > 0
+                                ? `No ${postStatusFilter} posts found for the selected filters.`
                                 : `No ${postStatusFilter} posts found.`
                             }
                         </p>
