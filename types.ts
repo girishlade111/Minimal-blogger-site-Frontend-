@@ -17,6 +17,7 @@ export interface Comment {
   author: string;
   text: string;
   date: string;
+  parentId?: string | null;
 }
 
 export interface Author {
