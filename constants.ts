@@ -72,3 +72,58 @@ export const mockPosts: Post[] = [
     `
   }
 ];
+
+export const categoryDetails = [
+  {
+    name: 'AI',
+    description: 'The latest in machine learning and artificial intelligence.',
+    Icon: 'BrainCircuitIcon',
+  },
+  {
+    name: 'Web Development',
+    description: 'Modern frontend and backend development techniques.',
+    Icon: 'CodeIcon',
+  },
+  {
+    name: 'UI/UX',
+    description: 'Crafting beautiful and intuitive user experiences.',
+    Icon: 'PaletteIcon',
+  },
+  {
+    name: 'Cloud',
+    description: 'Exploring serverless, containers, and cloud infrastructure.',
+    Icon: 'CloudIcon',
+  },
+];
+
+
+export const whyReadItems = [
+    {
+        Icon: 'BookOpenIcon',
+        title: 'Expert Insights',
+        description: 'Our articles are written by industry professionals with years of hands-on experience in their fields.'
+    },
+    {
+        Icon: 'TrendUpIcon',
+        title: 'Latest Trends',
+        description: 'Stay ahead of the curve with our analysis of the latest trends and technologies in the software world.'
+    },
+    {
+        Icon: 'LightbulbIcon',
+        title: 'Practical Guides',
+        description: 'We focus on practical, actionable advice that you can apply to your own projects immediately.'
+    }
+];
+
+export const testimonials = [
+    {
+        quote: "This blog is my go-to resource for staying updated on web development. The articles are always insightful and well-written.",
+        name: "Alex Johnson",
+        title: "Senior Frontend Developer"
+    },
+    {
+        quote: "I love the clean design and the high-quality content. It's a breath of fresh air in the tech blogosphere.",
+        name: "Samantha Lee",
+        title: "UI/UX Designer"
+    }
+];

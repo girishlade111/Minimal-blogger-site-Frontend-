@@ -1,16 +1,41 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { mockPosts } from '../constants';
+import { Link } from 'react-router-dom';
+import { mockPosts, categoryDetails, whyReadItems, testimonials, mockAuthors } from '../constants';
 import { BlogCard } from '../components/BlogCard';
 import { FeaturedBlogCard } from '../components/FeaturedBlogCard';
 import { Comment } from '../types';
 
-const POSTS_PER_PAGE = 2; // Set to 2 to demonstrate pagination with 3 posts
+const CodeIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+);
+const BrainCircuitIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 2a10 10 0 0 0-10 10c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33s1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85v2.72c0 .27.16.59.67.5A10 10 0 0 0 22 12c0-5.52-4.48-10-10-10z"></path></svg>
+);
+const PaletteIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"></circle><path d="M12 2a7 7 0 1 0 10 10"></path></svg>
+);
+const CloudIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+);
+const LightbulbIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M9 18h6v-2.48c0-.79.31-1.54.88-2.12l1.62-1.62c.98-.98 1.5-2.31 1.5-3.78 0-4.41-3.59-8-8-8s-8 3.59-8 8c0 1.47.52 2.8 1.5 3.78l1.62 1.62c.57.57.88 1.33.88 2.12V18z"></path><path d="M12 22v-2"></path><path d="M8.5 14.5h7"></path></svg>
+);
+const BookOpenIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+);
+const TrendUpIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+);
+
+const iconMap: { [key: string]: React.FC<React.SVGProps<SVGSVGElement>> } = {
+    BrainCircuitIcon, CodeIcon, PaletteIcon, CloudIcon, BookOpenIcon, TrendUpIcon, LightbulbIcon
+};
+
+const POSTS_PER_PAGE = 2;
 
 const getCommentCount = (slug: string): number => {
-    if (typeof window === 'undefined') {
-        return 0;
-    }
+    if (typeof window === 'undefined') return 0;
     try {
         const item = window.localStorage.getItem(`comments-${slug}`);
         if (item) {
@@ -45,40 +70,22 @@ const HomePage: React.FC = () => {
     const postsToFilter = postStatusFilter === 'published' ? regularPosts : draftPosts;
 
     const filteredPosts = useMemo(() => {
-        if (activeFilter.type === 'all') {
-            return postsToFilter;
-        }
-        if (activeFilter.type === 'category') {
-            return postsToFilter.filter(post => post.categories.includes(activeFilter.name));
-        }
-        if (activeFilter.type === 'tag') {
-            return postsToFilter.filter(post => post.tags?.includes(activeFilter.name));
-        }
+        if (activeFilter.type === 'all') return postsToFilter;
+        if (activeFilter.type === 'category') return postsToFilter.filter(post => post.categories.includes(activeFilter.name));
+        if (activeFilter.type === 'tag') return postsToFilter.filter(post => post.tags?.includes(activeFilter.name));
         return postsToFilter;
     }, [activeFilter, postsToFilter]);
 
-
-    // Reset to page 1 when filters change
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [activeFilter, postStatusFilter]);
+    useEffect(() => { setCurrentPage(1); }, [activeFilter, postStatusFilter]);
     
     const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
     const indexOfLastPost = currentPage * POSTS_PER_PAGE;
     const indexOfFirstPost = indexOfLastPost - POSTS_PER_PAGE;
     const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
 
-    const goToNextPage = () => {
-        setCurrentPage((page) => Math.min(page + 1, totalPages));
-    };
-
-    const goToPreviousPage = () => {
-        setCurrentPage((page) => Math.max(page - 1, 1));
-    };
-
-    const handleFilterClick = (type: 'all' | 'category' | 'tag', name: string) => {
-        setActiveFilter({ type, name });
-    };
+    const goToNextPage = () => setCurrentPage((page) => Math.min(page + 1, totalPages));
+    const goToPreviousPage = () => setCurrentPage((page) => Math.max(page - 1, 1));
+    const handleFilterClick = (type: 'all' | 'category' | 'tag', name: string) => setActiveFilter({ type, name });
 
     const FilterButton: React.FC<{type: 'all' | 'category' | 'tag', name: string}> = ({ type, name }) => {
         const isActive = activeFilter.type === type && activeFilter.name === name;
@@ -86,9 +93,7 @@ const HomePage: React.FC = () => {
             <button
                 onClick={() => handleFilterClick(type, name)}
                 className={`rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-                    isActive
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                    isActive ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
                 }`}
             >
                 {name}
@@ -97,15 +102,23 @@ const HomePage: React.FC = () => {
     }
 
     return (
-        <div className="animate-fade-in space-y-12">
-            <div className="text-center">
-                <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-                    Latest Insights & Ideas
+        <div className="space-y-16 md:space-y-24">
+            <section className="text-center py-16 md:py-24 animate-fade-in">
+                <h1 className="text-5xl font-extrabold tracking-tighter text-foreground sm:text-6xl lg:text-7xl">
+                    Where Code Meets Creativity
                 </h1>
-                <p className="mt-4 text-lg text-muted-foreground">
-                    Welcome to our blog. Discover articles on technology, design, and business.
+                <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground md:text-xl">
+                    A curated blog for developers, designers, and tech enthusiasts. Dive into topics from AI and cloud to minimal UI design.
                 </p>
-            </div>
+                <div className="mt-8 flex justify-center gap-4">
+                    <a href="#latest-posts" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8">
+                        Start Reading
+                    </a>
+                    <Link to="/about" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 px-8">
+                        Learn More
+                    </Link>
+                </div>
+            </section>
 
             {postStatusFilter === 'published' && featuredPosts.length > 0 && (
                 <section aria-labelledby="featured-posts-heading">
@@ -120,15 +133,88 @@ const HomePage: React.FC = () => {
                 </section>
             )}
 
-            {postStatusFilter === 'published' && featuredPosts.length > 0 && <div className="border-t border-border/40"></div>}
+            <div className="border-t border-border/40"></div>
+
+            <section aria-labelledby="explore-topics-heading">
+                <h2 id="explore-topics-heading" className="text-3xl font-bold tracking-tight text-center text-foreground sm:text-4xl mb-12">
+                    Explore Topics
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {categoryDetails.map((category) => {
+                        const Icon = iconMap[category.Icon];
+                        return (
+                            <div key={category.name} className="p-6 rounded-lg border bg-card text-card-foreground text-center flex flex-col items-center transition-transform duration-300 hover:-translate-y-2">
+                                <div className="flex-shrink-0 mb-4 p-3 bg-primary/10 rounded-full">
+                                    <Icon className="h-8 w-8 text-primary" />
+                                </div>
+                                <h3 className="text-xl font-semibold text-foreground mb-2">{category.name}</h3>
+                                <p className="text-muted-foreground text-sm flex-grow">{category.description}</p>
+                            </div>
+                        );
+                    })}
+                </div>
+            </section>
+
+            <section aria-labelledby="why-read-heading" className="py-16 bg-secondary rounded-lg">
+                <div className="container mx-auto px-4">
+                    <h2 id="why-read-heading" className="text-3xl font-bold tracking-tight text-center text-foreground sm:text-4xl mb-12">
+                        Why Read Lade Stack?
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center max-w-5xl mx-auto">
+                        {whyReadItems.map((item) => {
+                            const Icon = iconMap[item.Icon];
+                            return (
+                                <div key={item.title} className="flex flex-col items-center">
+                                    <div className="flex-shrink-0 mb-4 p-3 bg-background border rounded-full">
+                                        <Icon className="h-7 w-7 text-primary" />
+                                    </div>
+                                    <h3 className="text-xl font-semibold text-foreground mb-2">{item.title}</h3>
+                                    <p className="text-muted-foreground">{item.description}</p>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </section>
+
+            <section aria-labelledby="testimonials-heading">
+                <h2 id="testimonials-heading" className="text-3xl font-bold tracking-tight text-center text-foreground sm:text-4xl mb-12">
+                    What Our Readers Say
+                </h2>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    {testimonials.map((testimonial, index) => (
+                        <blockquote key={index} className="p-6 rounded-lg border bg-card text-card-foreground shadow-sm">
+                            <p className="text-muted-foreground italic mb-4">"{testimonial.quote}"</p>
+                            <footer className="font-semibold text-foreground">{testimonial.name}, <span className="text-sm text-muted-foreground font-normal">{testimonial.title}</span></footer>
+                        </blockquote>
+                    ))}
+                </div>
+            </section>
+
+            <section aria-labelledby="author-spotlight-heading">
+                <div className="grid md:grid-cols-3 gap-8 items-center bg-card border rounded-lg p-8">
+                    <div className="md:col-span-1 flex justify-center">
+                        <img src={mockAuthors['Girish Lade'].avatar} alt={mockAuthors['Girish Lade'].name} width={150} height={150} className="rounded-full shadow-lg"/>
+                    </div>
+                    <div className="md:col-span-2 text-center md:text-left">
+                        <h2 id="author-spotlight-heading" className="text-2xl font-bold text-foreground">About the Author</h2>
+                        <p className="mt-4 text-muted-foreground">{mockAuthors['Girish Lade'].bio}</p>
+                        <Link to="/about" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 mt-6">
+                            Read More About Girish
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
+            <div className="border-t border-border/40"></div>
             
-            <section className="space-y-8" aria-labelledby="all-posts-heading">
+            <section className="space-y-8" aria-labelledby="latest-posts-heading" id="latest-posts">
                 <div className="space-y-6">
-                    <h2 id="all-posts-heading" className="text-3xl font-bold tracking-tight text-center text-foreground sm:text-4xl">
-                        All Posts
+                    <h2 id="latest-posts-heading" className="text-3xl font-bold tracking-tight text-center text-foreground sm:text-4xl">
+                        Latest Posts
                     </h2>
                     <div className="flex flex-wrap items-center justify-center gap-2">
-                        <FilterButton type="all" name="All Posts" />
+                        <FilterButton type="all" name="All" />
                     </div>
                     <div>
                         <h3 className="text-center text-sm font-semibold uppercase text-muted-foreground tracking-wider mb-4">Categories</h3>
@@ -146,29 +232,14 @@ const HomePage: React.FC = () => {
 
                 <div className="border-b border-border/40">
                     <div className="flex justify-center space-x-4">
-                        <button
-                            onClick={() => setPostStatusFilter('published')}
-                            className={`pb-2 text-sm font-semibold transition-colors ${
-                                postStatusFilter === 'published'
-                                    ? 'text-primary border-b-2 border-primary'
-                                    : 'text-muted-foreground hover:text-foreground'
-                            }`}
-                        >
+                        <button onClick={() => setPostStatusFilter('published')} className={`pb-2 text-sm font-semibold transition-colors ${postStatusFilter === 'published' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}>
                             Published ({mockPosts.filter(p => p.status === 'published').length})
                         </button>
-                        <button
-                            onClick={() => setPostStatusFilter('draft')}
-                            className={`pb-2 text-sm font-semibold transition-colors ${
-                                postStatusFilter === 'draft'
-                                    ? 'text-primary border-b-2 border-primary'
-                                    : 'text-muted-foreground hover:text-foreground'
-                            }`}
-                        >
+                        <button onClick={() => setPostStatusFilter('draft')} className={`pb-2 text-sm font-semibold transition-colors ${postStatusFilter === 'draft' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}>
                             Drafts ({mockPosts.filter(p => p.status === 'draft').length})
                         </button>
                     </div>
                 </div>
-
 
                 {currentPosts.length > 0 ? (
                     <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 min-h-[550px]">
@@ -189,23 +260,13 @@ const HomePage: React.FC = () => {
 
                 {totalPages > 1 && (
                     <div className="flex justify-center items-center gap-4 pt-8">
-                        <button
-                            onClick={goToPreviousPage}
-                            disabled={currentPage === 1}
-                            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                            aria-label="Go to previous page"
-                        >
+                        <button onClick={goToPreviousPage} disabled={currentPage === 1} className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Go to previous page">
                             Previous
                         </button>
                         <span className="text-sm text-muted-foreground" aria-live="polite">
                             Page {currentPage} of {totalPages}
                         </span>
-                        <button
-                            onClick={goToNextPage}
-                            disabled={currentPage === totalPages}
-                            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                            aria-label="Go to next page"
-                        >
+                        <button onClick={goToNextPage} disabled={currentPage === totalPages} className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Go to next page">
                             Next
                         </button>
                     </div>
