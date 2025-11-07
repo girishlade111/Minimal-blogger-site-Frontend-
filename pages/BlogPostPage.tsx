@@ -120,7 +120,12 @@ const BlogPostPage: React.FC = () => {
                             {post.title}
                         </h1>
                         <div className="text-sm text-muted-foreground">
-                            <span>By {post.author}</span>
+                            <span>
+                                By{' '}
+                                <Link to={`/author/${encodeURIComponent(post.author)}`} className="font-medium text-foreground hover:underline">
+                                    {post.author}
+                                </Link>
+                            </span>
                             <span className="mx-2">•</span>
                             <span>{post.date}</span>
                         </div>

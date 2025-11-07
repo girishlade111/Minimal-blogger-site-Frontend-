@@ -48,7 +48,9 @@ export const BlogCard: React.FC<BlogCardProps> = ({ post, highlightedTitle, high
                     </p>
                     <div className="flex items-end justify-between mt-auto">
                         <div className="flex items-center text-xs text-muted-foreground">
-                            <span>{post.author}</span>
+                            <Link to={`/author/${encodeURIComponent(post.author)}`} onClick={(e) => e.stopPropagation()} className="font-medium text-foreground hover:underline z-10 relative">
+                                {post.author}
+                            </Link>
                             <span className="mx-2">•</span>
                             <span>{post.date}</span>
                             {typeof commentCount === 'number' && (

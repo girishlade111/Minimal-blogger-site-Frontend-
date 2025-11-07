@@ -10,6 +10,7 @@ import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import AdminPage from './pages/AdminPage';
 import SearchResultsPage from './pages/SearchResultsPage';
+import AuthorPage from './pages/AuthorPage';
 
 // A helper component to scroll to top on route change
 const ScrollToTop: React.FC = () => {
@@ -33,6 +34,7 @@ const App: React.FC = () => {
                         <Route path="/" element={<HomePage />} />
                         <Route path="/search" element={<SearchResultsPage />} />
                         <Route path="/blog/:slug" element={<BlogPostPage />} />
+                        <Route path="/author/:authorName" element={<AuthorPage />} />
                         <Route path="/about" element={<AboutPage />} />
                         <Route path="/contact" element={<ContactPage />} />
                         <Route path="/admin" element={<AdminPage />} />
