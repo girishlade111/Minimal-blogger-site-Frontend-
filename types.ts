@@ -1,3 +1,4 @@
+
 export interface Post {
   id: number;
   title: string;
@@ -9,4 +10,11 @@ export interface Post {
   content: string;
   categories: string[];
   tags?: string[];
+}
+
+export interface Comment {
+  id: string;
+  author: string;
+  text: string;
+  date: string;
 }
