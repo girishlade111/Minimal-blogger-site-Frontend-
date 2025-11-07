@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -125,6 +124,49 @@
         --border: 217.2 32.6% 17.5%;
         --input: 217.2 32.6% 17.5%;
         --ring: 212.7 26.8% 83.9%;
+      }
+
+      /* Custom styles for Tailwind Typography */
+      .prose {
+        --tw-prose-body: hsl(var(--foreground));
+        --tw-prose-headings: hsl(var(--foreground));
+        --tw-prose-lead: hsl(var(--muted-foreground));
+        --tw-prose-links: hsl(var(--primary));
+        --tw-prose-bold: hsl(var(--foreground));
+        --tw-prose-counters: hsl(var(--muted-foreground));
+        --tw-prose-bullets: hsl(var(--muted-foreground));
+        --tw-prose-hr: hsl(var(--border));
+        --tw-prose-quotes: hsl(var(--foreground));
+        --tw-prose-quote-borders: hsl(var(--primary));
+        --tw-prose-captions: hsl(var(--muted-foreground));
+        --tw-prose-code: hsl(var(--primary));
+        --tw-prose-pre-code: hsl(var(--secondary-foreground));
+        --tw-prose-pre-bg: hsl(var(--secondary));
+        --tw-prose-th-borders: hsl(var(--border));
+        --tw-prose-td-borders: hsl(var(--border));
+      }
+
+      /* Improved readability for blog post content */
+      .prose-lg p,
+      .prose-lg ul,
+      .prose-lg ol,
+      .prose-lg li {
+        line-height: 1.8;
+      }
+
+      .prose-lg p {
+        margin-top: 1.5em;
+        margin-bottom: 1.5em;
+      }
+
+      .prose-lg h2 {
+          margin-top: 2.5em;
+          margin-bottom: 1.25em;
+      }
+      
+      .prose-lg h3 {
+          margin-top: 2em;
+          margin-bottom: 1em;
       }
     </style>
 <script type="importmap">

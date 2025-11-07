@@ -117,7 +117,7 @@ const BlogPostPage: React.FC = () => {
                         className="w-full rounded-lg shadow-lg mb-8 aspect-video object-cover"
                     />
                     <div
-                        className="prose prose-lg dark:prose-invert max-w-none text-foreground leading-relaxed"
+                        className="prose prose-lg dark:prose-invert max-w-none"
                         dangerouslySetInnerHTML={{ __html: post.content }}
                     />
                     
