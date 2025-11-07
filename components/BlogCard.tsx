@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Post } from '../types';
@@ -24,6 +23,11 @@ export const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
                         {post.categories.map((category) => (
                             <span key={category} className="inline-block bg-secondary text-secondary-foreground rounded-full px-3 py-1 text-xs font-semibold">
                                 {category}
+                            </span>
+                        ))}
+                        {post.tags?.map((tag) => (
+                             <span key={tag} className="inline-block border border-primary/50 text-primary rounded-full px-3 py-1 text-xs font-semibold">
+                                #{tag}
                             </span>
                         ))}
                     </div>

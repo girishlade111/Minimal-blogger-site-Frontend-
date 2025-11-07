@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './hooks/useTheme';
@@ -10,6 +9,7 @@ import BlogPostPage from './pages/BlogPostPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import AdminPage from './pages/AdminPage';
+import SearchResultsPage from './pages/SearchResultsPage';
 
 // A helper component to scroll to top on route change
 const ScrollToTop: React.FC = () => {
@@ -31,6 +31,7 @@ const App: React.FC = () => {
                 <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
                     <Routes>
                         <Route path="/" element={<HomePage />} />
+                        <Route path="/search" element={<SearchResultsPage />} />
                         <Route path="/blog/:slug" element={<BlogPostPage />} />
                         <Route path="/about" element={<AboutPage />} />
                         <Route path="/contact" element={<ContactPage />} />

@@ -1,7 +1,7 @@
-
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { ThemeToggle } from './ThemeToggle';
+import { SearchBar } from './SearchBar';
 
 const MenuIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
@@ -31,14 +31,20 @@ export const Navbar: React.FC = () => {
                 <Link to="/" className="font-bold text-lg text-foreground">
                     Lade Stack Blog
                 </Link>
-                <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-                    {navLinks}
-                </nav>
+                <div className="hidden md:flex items-center gap-6">
+                    <nav className="flex items-center space-x-6 text-sm font-medium">
+                        {navLinks}
+                    </nav>
+                    <SearchBar />
+                </div>
                 <div className="flex items-center gap-2">
-                    <ThemeToggle />
+                    <div className="hidden md:block">
+                        <ThemeToggle />
+                    </div>
                     <button
                         className="md:hidden p-2"
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        aria-label="Toggle menu"
                     >
                         {isMenuOpen ? <XIcon className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
                         <span className="sr-only">Toggle menu</span>
@@ -47,9 +53,15 @@ export const Navbar: React.FC = () => {
             </div>
             {isMenuOpen && (
                 <div className="md:hidden pb-4">
+                    <div className="px-4 mb-4">
+                        <SearchBar />
+                    </div>
                     <nav className="flex flex-col items-center space-y-4 text-base font-medium">
                        {navLinks}
                     </nav>
+                     <div className="mt-4 flex justify-center">
+                        <ThemeToggle />
+                    </div>
                 </div>
             )}
         </header>

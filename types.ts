@@ -1,4 +1,3 @@
-
 export interface Post {
   id: number;
   title: string;
@@ -9,4 +8,5 @@ export interface Post {
   image: string;
   content: string;
   categories: string[];
+  tags?: string[];
 }
